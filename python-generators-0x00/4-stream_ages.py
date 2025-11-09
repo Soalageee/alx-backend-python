@@ -3,7 +3,7 @@
 import mysql.connector
 from seed import connect_to_prodev
 
-def stream_users_ages():
+def stream_user_ages():
     connection = connect_to_prodev()
     cursor = connection.cursor(dictionary=True)
     cursor.execute("SELECT age FROM user_data")
@@ -18,7 +18,7 @@ def calculate_average_age():
     total_age = 0
     count = 0
 
-    for age in stream_users_ages():
+    for age in stream_user_ages():
         total_age += age
         count += 1
 
