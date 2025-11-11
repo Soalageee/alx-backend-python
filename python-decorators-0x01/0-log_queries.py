@@ -2,6 +2,7 @@
 
 import sqlite3
 import functools
+from datetime import datetime
 
 conn = sqlite3.connect('users.db')
 cursor = conn.cursor()
@@ -23,7 +24,7 @@ def log_queries(func):
     def wrapper_log_queries(*args, **kwargs):
         query = kwargs.get("query", args[0] if args else None)
         if query:
-            print(f"Executing SQL Query: {query}")
+            print(f"{datetime.now()} - Executing SQL Query: {query}")
         else:
             print("No SQL query provided.")
         return func(*args, **kwargs)
