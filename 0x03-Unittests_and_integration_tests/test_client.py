@@ -46,7 +46,6 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(result, expected)
 
 
-
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
         """Test that public_repos returns the expected repo names"""
@@ -66,11 +65,10 @@ class TestGithubOrgClient(unittest.TestCase):
 
             client = GithubOrgClient("testorg")
             result = client.public_repos()
-
-            
             expected = ["repo1", "repo2", "repo3"]
 
           
             self.assertEqual(result, expected)
             mock_url.assert_called_once()
-            mock_get_json.assert_called_once_with("https://api.fake.com/orgs/testorg/repos")
+            mock_get_json.assert_called_once_with("https://api.fake.com/orgs/testorg/repos"
+            )
