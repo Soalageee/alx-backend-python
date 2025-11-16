@@ -58,6 +58,29 @@ Test that `access_nested_map` raises a `KeyError` when given invalid paths, and 
 - Uses `with self.assertRaises(KeyError) as context:` to catch exceptions.  
 - Checks `context.exception.args[0]` to confirm the exception message is correct.
 
+---
+
+## Task 2: Mock HTTP Calls
+
+### Objective:  
+Test that `get_json` returns the expected payload without making real HTTP requests.
+
+### Implementation:  
+- Added `TestGetJson` class with `test_get_json` method.  
+- Uses `@parameterized.expand` for multiple inputs:
+
+| test_url              | test_payload       |
+|----------------------|------------------|
+| "http://example.com"  | {"payload": True} |
+| "http://holberton.io" | {"payload": False} |
+
+- Uses `unittest.mock.patch` to mock `requests.get`.  
+- The mocked `.json()` method returns `test_payload`.  
+- Assertions:
+  - `requests.get` called **exactly once** with `test_url`.  
+  - `get_json(test_url)` output equals **mocked payload**.
+
+
 ## How to Run the Tests
 
 1. Ensure you are in the project directory.
