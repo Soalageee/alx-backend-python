@@ -61,22 +61,18 @@ class TestMemoize(unittest.TestCase):
 
     def test_memoize(self):
         """Test that memoize caches a method's result after the first call."""
-        
 
         class TestClass:
             """A small class to test memoization."""
-
 
             def a_method(self) -> int:
                 """Returns a fixed number."""
                 return 42
 
-
             @memoize
             def a_property(self) -> int:
                 """Memoized property that calls a_method."""
                 return self.a_method()
-
 
         with patch.object(TestClass, "a_method", return_value=42) as mock_method:
             test_obj = TestClass()
@@ -87,4 +83,3 @@ class TestMemoize(unittest.TestCase):
             self.assertEqual(second_call, 42)
 
             mock_method.assert_called_once()
-    
