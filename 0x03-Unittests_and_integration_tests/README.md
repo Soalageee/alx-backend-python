@@ -65,7 +65,7 @@ Test that `access_nested_map` raises a `KeyError` when given invalid paths, and 
 ### Objective:  
 Test that `get_json` returns the expected payload without making real HTTP requests.
 
-### Implementation:  
+### Test Implementation:  
 - Added `TestGetJson` class with `test_get_json` method.  
 - Uses `@parameterized.expand` for multiple inputs:
 
@@ -79,6 +79,25 @@ Test that `get_json` returns the expected payload without making real HTTP reque
 - Assertions:
   - `requests.get` called **exactly once** with `test_url`.  
   - `get_json(test_url)` output equals **mocked payload**.
+
+---
+
+## Task 3: Parameterize and Patch (Memoization)
+
+### Objective:  
+Test that the `memoize` decorator caches a method’s result after the first call, preventing repeated executions.
+
+### Test Implementation:  
+- Added `TestMemoize` class with `test_memoize` method.  
+- Defined an inner class `TestClass` with:
+  - `a_method()` → returns 42  
+  - `a_property()` → decorated with `@memoize`  
+
+- Used `unittest.mock.patch` to **mock `a_method`**, allowing us to track calls.  
+- Steps:
+  1. Call `a_property` **twice**.  
+  2. Assert both calls return **42**.  
+  3. Assert `a_method` was called **only once** using `assert_called_once`.
 
 
 ## How to Run the Tests
