@@ -99,6 +99,35 @@ Test that the `memoize` decorator caches a method’s result after the first cal
   2. Assert both calls return **42**.  
   3. Assert `a_method` was called **only once** using `assert_called_once`.
 
+---
+
+## Task 4 — Parameterize and Patch as Decorators
+
+### Objective:
+
+Test the `GithubOrgClient.org` method without making real HTTP requests by using patching and parameterization.
+
+### Test Implementation:
+
+- Created a new test file: `test_client.py`.
+
+- Added the class `TestGithubOrgClient(unittest.TestCase)`.
+
+- Implemented `test_org` to verify that:
+
+  1. `GithubOrgClient.org` returns the correct mocked payload.
+
+  2. `get_json` is called exactly once with the expected GitHub API URL.
+
+  3. Used:
+
+    - `@patch('client.get_json')` to replace real HTTP calls with a mock.
+
+    - `@parameterized.expand` to test multiple organizations (google, abc).
+
+    - Ensured no real HTTP requests were made during testing.
+
+
 
 ## How to Run the Tests
 
