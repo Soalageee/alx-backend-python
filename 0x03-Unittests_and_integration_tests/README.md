@@ -149,6 +149,35 @@ Unit-test the private property `_public_repos_url` of `GithubOrgClient` by mocki
 
 - Ensured no real HTTP requests were made.
 
+---
+
+## Task 6: Test GithubOrgClient.public_repos
+
+### Objective:
+
+Unit-test the `public_repos` method of `GithubOrgClient` by mocking both the `_public_repos_url` property and the `get_json` function, ensuring no real HTTP requests are made.
+
+### Test Implementation:
+
+- Added a test method `test_public_repos` in `TestGithubOrgClient`.
+
+- Used `@patch("client.get_json")` to mock the JSON response from the API.
+
+- Used `patch.object(GithubOrgClient, "_public_repos_url", new_callable=PropertyMock)` to mock the private property `_public_repos_url`.
+
+- Set fake values:
+
+  - `_public_repos_url → "https://api.fake.com/orgs/testorg/repos"`
+
+  - `get_json → [{"name": "repo1"}, {"name": "repo2"}, {"name": "repo3"}]`
+
+- Called `client.public_repos()` and **asserted**:
+
+  - Returned list of repo names matches the mocked payload.
+
+  - `_public_repos_url` property was accessed once.
+
+  - `get_json` was called once with the fake URL.
 
 
 
@@ -159,4 +188,5 @@ Unit-test the private property `_public_repos_url` of `GithubOrgClient` by mocki
 
 ```bash
 python3 -m unittest test_utils.py
+python3 -m unittest test_client.py
 ```
