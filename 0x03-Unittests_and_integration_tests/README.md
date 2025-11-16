@@ -101,7 +101,7 @@ Test that the `memoize` decorator caches a method’s result after the first cal
 
 ---
 
-## Task 4 — Parameterize and Patch as Decorators
+## Task 4: Parameterize and Patch as Decorators
 
 ### Objective:
 
@@ -126,6 +126,29 @@ Test the `GithubOrgClient.org` method without making real HTTP requests by using
     - `@parameterized.expand` to test multiple organizations (google, abc).
 
     - Ensured no real HTTP requests were made during testing.
+
+---
+
+## Task 5: Test GithubOrgClient._public_repos_url
+
+### Objective:
+
+Unit-test the private property `_public_repos_url` of `GithubOrgClient` by mocking the org property, which is memoized and therefore behaves like a property.
+
+### Test Implementation:
+
+- Added a test method `test_public_repos_url` in `TestGithubOrgClient` class.
+
+- Used `unittest.mock.patch.object` with PropertyMock to mock the org property.
+
+- Set the mocked property to return a known payload:
+  ```
+    {"repos_url": "https://api.github.com/orgs/testorg/repos"}
+  ```
+- Called the private property _public_repos_url and asserted it returned the expected URL.
+
+- Ensured no real HTTP requests were made.
+
 
 
 
