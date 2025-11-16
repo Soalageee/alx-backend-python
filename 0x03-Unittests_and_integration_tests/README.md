@@ -179,7 +179,26 @@ Unit-test the `public_repos` method of `GithubOrgClient` by mocking both the `_p
 
   - `get_json` was called once with the fake URL.
 
+---
 
+## Task 7: Test GithubOrgClient.has_license
+
+### Objective:
+
+Unit-test the static method `has_license` of `GithubOrgClient` by checking if a repository dictionary contains a given license key.
+
+### Test Implementation:
+
+- Added a test method `test_has_license` in `TestGithubOrgClient`.
+
+- Used `@parameterized.expand` to test multiple cases in a single method:
+
+```
+{"license": {"key": "my_license"}} with "my_license" → should return True
+
+{"license": {"key": "other_license"}} with "my_license" → should return False
+```
+- Asserted that `has_license(repo, license_key)` returns the expected boolean value for each case.
 
 ## How to Run the Tests
 
