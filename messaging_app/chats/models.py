@@ -8,6 +8,7 @@ class User(AbstractUser):
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, null=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
+    password = models.CharField(max_length=128, null=False)
     
     ROLE_CHOICES = [
         ('guest', 'Guest'),
