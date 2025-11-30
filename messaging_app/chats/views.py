@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message, User
 from .serializers import ConversationSerializer, MessageSerializer
-from .permissions import IsOwner
+from .permissions import IsOwner, IsParticipantOfConversation
 from rest_framework.permissions import IsAuthenticated
+from .auth import IsOwner
 
 
 # Create your views here.
@@ -13,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    permission_classes = [IsParticipantOfConversation]
 
     # Create a new conversation (override create for extra logic)
     def create(self, request, *args, **kwargs):
@@ -31,11 +33,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwner, IsParticipantOfConversation]
 
     def get_queryset(self):
         # Only return messages where the sender is the logged-in user
-        return Message.objects.filter(sender=self.request.user)
+        return Message.objects.filter(conversation__participants=self.request.user)
 
     # Send a message to a conversation
     def create(self, request, *args, **kwargs):
