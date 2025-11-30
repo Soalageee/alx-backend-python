@@ -1,9 +1,12 @@
 from django.shortcuts import render
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message, User
 from .serializers import ConversationSerializer, MessageSerializer
+from .permissions import IsOwner
+from rest_framework.permissions import IsAuthenticated
+
 
 # Create your views here.
 
@@ -28,6 +31,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        # Only return messages where the sender is the logged-in user
+        return Message.objects.filter(sender=self.request.user)
 
     # Send a message to a conversation
     def create(self, request, *args, **kwargs):
@@ -50,3 +58,9 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class MessageDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    permission_classes = [IsOwner]
