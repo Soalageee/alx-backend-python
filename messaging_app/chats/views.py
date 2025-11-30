@@ -8,6 +8,9 @@ from .permissions import IsParticipantOfConversation
 from rest_framework.permissions import IsAuthenticated
 from .auth import IsOwner
 from rest_framework.exceptions import PermissionDenied
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import MessageFilter
+from .pagination import MessagePagination
 
 
 # Create your views here.
@@ -43,11 +46,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsOwner, IsParticipantOfConversation]
+    pagination_class = MessagePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
 
     def get_queryset(self):
         # Only return all messages in the particular conversation
         conversation_id = self.kwargs.get("conversation_pk")
-        return Message.objects.filter(conversation__participants=self.request.user, conversation_id=conversation_id)
+        return Message.objects.filter(conversation__participants=self.request.user, conversation_id=conversation_id).order_by('-created_at')
 
     # Send a message to a conversation
     def create(self, request, *args, **kwargs):
