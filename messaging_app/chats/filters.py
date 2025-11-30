@@ -1,6 +1,9 @@
 import django_filters
 from .models import Message
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class MessageFilter(django_filters.FilterSet):
     # Filter messages by sender
