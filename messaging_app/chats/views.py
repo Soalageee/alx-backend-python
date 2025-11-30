@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message, User
 from .serializers import ConversationSerializer, MessageSerializer
-from .permissions import IsOwner, IsParticipantOfConversation
+from .permissions import IsParticipantOfConversation
 from rest_framework.permissions import IsAuthenticated
 from .auth import IsOwner
+from rest_framework.exceptions import PermissionDenied
 
 
 # Create your views here.
@@ -14,7 +15,7 @@ from .auth import IsOwner
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [IsParticipantOfConversation]
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
     # Create a new conversation (override create for extra logic)
     def create(self, request, *args, **kwargs):
@@ -29,6 +30,14 @@ class ConversationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(conversation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def get_object(self):
+        obj = super().get_object()
+
+        if self.request.user not in obj.participants.all():
+            raise PermissionDenied("HTTP_403_FORBIDDEN")
+
+        return obj
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -36,8 +45,9 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwner, IsParticipantOfConversation]
 
     def get_queryset(self):
-        # Only return messages where the sender is the logged-in user
-        return Message.objects.filter(conversation__participants=self.request.user)
+        # Only return all messages in the particular conversation
+        conversation_id = self.kwargs.get("conversation_pk")
+        return Message.objects.filter(conversation__participants=self.request.user, conversation_id=conversation_id)
 
     # Send a message to a conversation
     def create(self, request, *args, **kwargs):
@@ -50,8 +60,15 @@ class MessageViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         conversation = Conversation.objects.get(conversation_id=conversation_id)
-        sender = User.objects.get(user_id=sender_id)
-
+        
+        if request.user not in conversation.participants.all():
+            return Response(
+                {"detail": "Forbidden"},
+                status=status.HTTP_403_FORBIDDEN    
+            )
+        
+        # sender = User.objects.get(user_id=sender_id)
+        sender = request.user
         message = Message.objects.create(
             sender=sender,
             conversation=conversation,
@@ -60,6 +77,23 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        conversation = Conversation.objects.get(
+            conversation_id=self.kwargs.get("conversation_pk")
+        )
+
+        
+        if self.request.user not in conversation.participants.all():
+            return Response(
+                {"detail": "Forbidden"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer.save(
+            sender=self.request.user,
+            conversation=conversation
+        )
 
 
 class MessageDetailView(generics.RetrieveUpdateDestroyAPIView):
