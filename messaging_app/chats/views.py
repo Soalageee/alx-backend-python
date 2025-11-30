@@ -39,7 +39,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     # Send a message to a conversation
     def create(self, request, *args, **kwargs):
-        conversation_id = request.data.get('conversation_id')
+        conversation_id = self.kwargs.get('conversation_pk') # conversation_id = request.data.get('conversation_id')
         sender_id = request.data.get('sender_id')
         message_body = request.data.get('message_body', '').strip()
 
